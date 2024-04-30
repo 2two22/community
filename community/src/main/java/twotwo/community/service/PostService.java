@@ -2,6 +2,7 @@ package twotwo.community.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import twotwo.community.client.UserClient;
 import twotwo.community.domain.Post;
 import twotwo.community.domain.repository.PostRepository;
 import twotwo.community.dto.request.PostRequest;
@@ -16,10 +17,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final UserClient userClient;
 
     public void create(Long userId, PostRequest form) {
         // TODO : request to user server
-        UserResponse response = null;
+        UserResponse response = userClient.getUserInfo(userId);
         postRepository.save(Post.of(form, null, response));
     }
 
