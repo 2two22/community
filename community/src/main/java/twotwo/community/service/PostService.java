@@ -19,13 +19,13 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserClient userClient;
 
-    public void create(Long userId, PostRequest form) {
+    public PostResponse create(Long userId, PostRequest form) {
         // TODO : request to user server
         UserResponse response = userClient.getUserInfo(userId);
-        postRepository.save(Post.of(form, null, response));
+        return PostResponse.from(postRepository.save(Post.of(form, null, response)));
     }
 
-    public void update(String postId, Long userId, PostRequest form) {
+    public PostResponse update(String postId, Long userId, PostRequest form) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("post not found"));
 
@@ -35,7 +35,7 @@ public class PostService {
         // TODO : request to user server
         UserResponse response = null;
         post.update(form, null, response);
-        postRepository.save(post);
+        return PostResponse.from(postRepository.save(post));
     }
 
     public void delete(String postId, Long userId) {
@@ -56,7 +56,7 @@ public class PostService {
 
     public List<PostResponse> retrievePosts() {
         return postRepository.findAll()
-                .stream().map(post -> PostResponse.from(post))
+                .stream().map(PostResponse::from)
                 .collect(Collectors.toList());
     }
 
