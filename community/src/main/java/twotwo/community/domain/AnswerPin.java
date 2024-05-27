@@ -21,8 +21,7 @@ public class AnswerPin extends BaseTimeDocument{
                 .build();
     }
 
-    public void update(String postId, String answerId){
-        this.postId = postId;
+    public void update(String answerId){
         this.answerId = answerId;
     }
 }

@@ -23,6 +23,7 @@ public class Post extends BaseTimeDocument {
     private List<String> images = new ArrayList<>();
     @Builder.Default
     private List<Long> likes = new ArrayList<>();
+    private int commentCount;
     private User user;
     private PostType type;
 
@@ -59,5 +60,13 @@ public class Post extends BaseTimeDocument {
 
     public boolean isUserLiked(Long userId){
         return likes.contains(userId);
+    }
+
+    public void increaseCommentCount(){
+        commentCount++;
+    }
+
+    public void decreaseCommentCount(){
+        commentCount--;
     }
 }

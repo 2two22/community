@@ -15,6 +15,7 @@ public record PostResponse(
         List<String> images,
         UserResponse user,
         int likeCount,
+        int commentCount,
         boolean isUserLiked
 ) {
     public static PostResponse from(Post post, Long userId) {
@@ -25,6 +26,7 @@ public record PostResponse(
                 .images(post.getImages())
                 .createdAt(post.getCreatedAt())
                 .user(UserResponse.from(post.getUser()))
+                .commentCount(post.getCommentCount())
                 .isUserLiked(post.isUserLiked(userId))
                 .likeCount(post.getLikes().size())
                 .build();
