@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface PostRepository extends MongoRepository<Post, String> {
     Long countByUser_Id(Long userId);
-    Optional<Post> findById(String id);
+    //Optional<Post> findById(String id);
     Page<Post> findAllByTypeOrderByCreatedAtDesc(PostType type, PageRequest request);
+    boolean findByIdAndType(String id, PostType type);
 }

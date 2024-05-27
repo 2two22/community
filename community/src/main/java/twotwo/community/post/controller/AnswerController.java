@@ -45,7 +45,7 @@ public class AnswerController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{answerId}/like")
+    @PostMapping("/{answerId}/like")
     public ResponseEntity<Void> registerOrCancelLike(Long userId, @PathVariable String answerId) {
         answerService.registerOrCancelLike(answerId, userId);
         return ResponseEntity.ok().build();

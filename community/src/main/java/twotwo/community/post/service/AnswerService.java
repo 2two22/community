@@ -6,10 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import twotwo.community.client.S3Client;
 import twotwo.community.client.UserClient;
-import twotwo.community.domain.Answer;
-import twotwo.community.domain.AnswerPin;
-import twotwo.community.domain.Domain;
-import twotwo.community.domain.Post;
+import twotwo.community.domain.*;
 import twotwo.community.domain.repository.AnswerPinRepository;
 import twotwo.community.domain.repository.AnswerRepository;
 import twotwo.community.domain.repository.PostRepository;
@@ -74,7 +71,7 @@ public class AnswerService {
         }
         AnswerPin answerPin = answerPinRepository.findById(answer.getPostId())
                 .orElse(AnswerPin.of(post.getId(), answerId));
-        answerPin.update(post.getId(), answerId);
+        answerPin.update(answerId);
         return answerPinRepository.save(answerPin).getPostId();
     }
 
@@ -124,10 +121,12 @@ public class AnswerService {
     }
 
     public List<AnswerResponse> retrieve(String postId, Long userId){
+        if(!postRepository.findByIdAndType(postId, PostType.QUESTION))
+            throw new BudException(NOT_FOUND_POST);
         List<Answer> answers = answerRepository.findByPostId(postId);
         AnswerPin answerPin = answerPinRepository.findById(postId)
-                .orElseThrow(() -> new BudException(NOT_FOUND_QNA_ANSWER_PIN));
-        return answers.stream().map(answer -> AnswerResponse.from(answer, userId, answer.getId().equals(answerPin.getAnswerId())))
+                .orElse(AnswerPin.builder().build());
+        return answers.stream().map(answer -> AnswerResponse.from(answer, userId, Objects.equals(answer.getId(), answerPin.getAnswerId())))
                 .sorted((o1, o2) -> Boolean.compare(o2.isPinned(), o1.isPinned())).collect(Collectors.toList());
     }
 

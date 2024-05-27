@@ -2,9 +2,8 @@ package twotwo.community.domain;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
-import twotwo.community.dto.request.AnswerRequest;
-import twotwo.community.dto.request.PostRequest;
 import twotwo.community.dto.response.UserResponse;
 
 import java.util.ArrayList;
@@ -14,33 +13,39 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Document(collection = "answers")
-public class Answer extends BaseTimeDocument {
+@Document(collection = "post-comments")
+public class PostComment extends BaseTimeDocument{
     @Id
     private String id;
     private String postId;
+    private String parentCommentId;
     private String content;
-    @Builder.Default
-    private List<String> images = new ArrayList<>();
+    private User user;
+    private boolean isDeleted;
     @Builder.Default
     private List<Long> likes = new ArrayList<>();
-    private User user;
-    private int commentCount;
+    @Transient
+    private List<PostComment> reComments;
 
-
-    public static Answer of(AnswerRequest form, List<String> images, UserResponse user) {
-        return Answer.builder()
-                .postId(form.getPostId())
-                .content(form.getContent())
-                .images(images)
+    public static PostComment of(String postId, String content, UserResponse user){
+        return PostComment.builder()
+                .postId(postId)
+                .content(content)
                 .user(User.from(user))
                 .build();
     }
 
-    public void update(AnswerRequest form, List<String> images, UserResponse user) {
-        this.content = form.getContent();
-        this.content = form.getContent();
-        this.images = images;
+    public static PostComment of(String postId, String parentCommentId, String content, UserResponse user){
+        return PostComment.builder()
+                .postId(postId)
+                .content(content)
+                .parentCommentId(parentCommentId)
+                .user(User.from(user))
+                .build();
+    }
+
+    public void update(String content, UserResponse user){
+        this.content = content;
         this.user = User.from(user);
     }
 
@@ -62,11 +67,7 @@ public class Answer extends BaseTimeDocument {
         return likes.contains(userId);
     }
 
-    public void increaseCommentCount(){
-        commentCount++;
-    }
-
-    public void decreaseCommentCount(){
-        commentCount--;
+    public void addReComments(List<PostComment> reComments){
+        this.reComments = reComments;
     }
 }

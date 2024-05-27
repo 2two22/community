@@ -46,7 +46,7 @@ public class PostController {
         return ResponseEntity.ok(postService.retrievePosts(userId, page, size, postType));
     }
 
-    @PutMapping("/{postId}/like")
+    @PostMapping("/{postId}/like")
     public ResponseEntity<Void> registerOrCancelLike(Long userId, @PathVariable String postId) {
         postService.registerOrCancelLike(postId, userId);
         return ResponseEntity.ok().build();
