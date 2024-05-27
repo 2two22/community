@@ -45,7 +45,7 @@ public class PostCommentController {
     }
 
 
-    @GetMapping("/{postId}")
+    @GetMapping("/{postId}/comments")
     public ResponseEntity<Slice<CommentResponse>> retrieve(@RequestParam(required = false, defaultValue = "0") int page,
                                                            @RequestParam(required = false, defaultValue = "10") int size,
                                                            @RequestParam(required = false) PostType postType,
@@ -54,7 +54,7 @@ public class PostCommentController {
         return ResponseEntity.ok(commentService.retrieveComments(postId, userId, page, size));
     }
 
-    @PostMapping("/comments/{commentId}")
+    @PostMapping("/comments/{commentId}/like")
     public ResponseEntity<Void> registerOrCancelLike(Long userId, @PathVariable String commentId) {
         commentService.registerOrCancelLike(commentId, userId);
         return ResponseEntity.ok().build();
