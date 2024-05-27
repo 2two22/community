@@ -13,9 +13,11 @@ public record PostResponse(
         String content,
         LocalDateTime createdAt,
         List<String> images,
-        UserResponse user
+        UserResponse user,
+        int likeCount,
+        boolean isUserLiked
 ) {
-    public static PostResponse from(Post post) {
+    public static PostResponse from(Post post, Long userId) {
         return PostResponse.builder()
                 .id(post.getId())
                 .content(post.getContent())
@@ -23,6 +25,8 @@ public record PostResponse(
                 .images(post.getImages())
                 .createdAt(post.getCreatedAt())
                 .user(UserResponse.from(post.getUser()))
+                .isUserLiked(post.isUserLiked(userId))
+                .likeCount(post.getLikes().size())
                 .build();
     }
 }
