@@ -6,12 +6,8 @@ import lombok.Getter;
 import twotwo.community.domain.PostType;
 
 @Getter
-public class PostRequest{
-    @NotNull
-    private PostType postType;
-
+public class AnswerRequest {
     @NotBlank
-    private String title;
-
     private String content;
+    private String postId;
 }
