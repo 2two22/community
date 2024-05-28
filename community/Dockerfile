@@ -1,5 +1,5 @@
 FROM openjdk:17-alpine
-ARG JAR_FILE=/build/libs/community-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=community/build/libs/community-0.0.1-SNAPSHOT.jar
 ARG DB_URL
 ARG S3_ACCESS_KEY
 ARG S3_SECRET_KEY
