@@ -34,7 +34,7 @@ jobs:
           context: .
           file: ./community/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_ID }}/api:latest
+          tags: ${{ secrets.DOCKERHUB_ID }}/community:latest
           build-args: |
             DB_URL=${{ secrets.DB_ENDPOINT }}
             S3_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
