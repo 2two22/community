@@ -40,7 +40,7 @@ public class PostService {
     public String create(String token, List<MultipartFile> images, PostRequest request) {
 
         // TODO : request to user server
-        UserResponse response = userClient.getUserInfo(tokenProvider.getUserId(token));
+        UserResponse response = userClient.getUserInfo(token);
         return postRepository.save(Post.of(request, saveImages(images), response)).getTitle();
     }
 
@@ -177,6 +177,10 @@ public class PostService {
         return postRepository.findAllByTypeOrderByCreatedAtDesc(type, request)
                 .stream().map(post -> PostResponse.from(post, userId))
                 .collect(Collectors.toList());
+    }
+
+    public Long getUsersPostCount(Long userId){
+        return postRepository.countByUser_Id(userId);
     }
 }
 
