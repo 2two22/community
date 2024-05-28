@@ -1,0 +1,41 @@
+name: deploy
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: checkout
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: build with gradle
+        run: |
+          cd ./community
+          chmod +x ./gradlew 
+          ./gradlew build
+
+      - name: login to docker hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_ID }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: build and push image
+        id: docker_build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_ID }}/api:latest
+          build-args: |
+            DB_URL=${{ secrets.DB_ENDPOINT }}
+            S3_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+            S3_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
