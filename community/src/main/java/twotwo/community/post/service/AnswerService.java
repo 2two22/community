@@ -14,6 +14,7 @@ import twotwo.community.dto.request.AnswerRequest;
 import twotwo.community.dto.response.AnswerResponse;
 import twotwo.community.dto.response.UserResponse;
 import twotwo.community.exception.BudException;
+import twotwo.community.util.TokenProvider;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -32,22 +33,25 @@ public class AnswerService {
     private final UserClient userClient;
     private final S3Client s3Client;
     private final AnswerPinRepository answerPinRepository;
+    private final TokenProvider tokenProvider;
 
-    public String create(Long userId, List<MultipartFile> images, AnswerRequest request) {
+    public String create(String token, List<MultipartFile> images, AnswerRequest request) {
         Post post = postRepository.findById(request.getPostId())
                 .orElseThrow(() -> new BudException(NOT_FOUND_POST));
+        Long userId = tokenProvider.getId(token);
         if (Objects.equals(post.getUser().getId(), userId)) {
             throw new BudException(CANNOT_ANSWER_YOURSELF);
         }
         // TODO : request to user server
-        UserResponse response = userClient.getUserInfo(userId);
+        UserResponse response = userClient.getUserInfo(token);
         return answerRepository.save(Answer.of(request, saveImages(images), response)).getContent();
     }
 
-    public String update(String answerId, List<MultipartFile> images, AnswerRequest request, Long userId) {
+    public String update(String answerId, List<MultipartFile> images, AnswerRequest request, String token) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BudException(NOT_FOUND_POST));
-        UserResponse response = userClient.getUserInfo(userId);
+        Long userId = tokenProvider.getId(token);
+        UserResponse response = userClient.getUserInfo(token);
         if (!Objects.equals(answer.getUser().getId(), userId)) {
             throw new BudException(NOT_POST_OWNER);
         }
@@ -61,11 +65,12 @@ public class AnswerService {
         return answerId;
     }
 
-    public String pinnedAnswer(String answerId, Long userId) {
+    public String pinnedAnswer(String answerId, String token) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BudException(NOT_FOUND_POST));
         Post post = postRepository.findById(answer.getPostId())
                 .orElseThrow(() -> new BudException(NOT_FOUND_POST));
+        Long userId = tokenProvider.getId(token);
         if (!Objects.equals(post.getUser().getId(), userId)) {
             throw new BudException(NOT_POST_OWNER);
         }
@@ -75,11 +80,12 @@ public class AnswerService {
         return answerPinRepository.save(answerPin).getPostId();
     }
 
-    public String cancelPinnedAnswer(String answerId, Long userId) {
+    public String cancelPinnedAnswer(String answerId, String token) {
         AnswerPin answerPin = answerPinRepository.findByAnswerId(answerId)
                 .orElseThrow(() -> new BudException(NOT_FOUND_QNA_ANSWER_PIN));
         Post post = postRepository.findById(answerPin.getPostId())
                 .orElseThrow(() -> new BudException(NOT_FOUND_POST));
+        Long userId = tokenProvider.getId(token);
         if (!Objects.equals(post.getUser().getId(), userId))
             throw new BudException(NOT_POST_OWNER);
         answerPinRepository.delete(answerPin);
@@ -100,9 +106,10 @@ public class AnswerService {
         answer.getImages().forEach(s3Client::delete);
     }
 
-    public String delete(String answerId, Long userId) {
+    public String delete(String answerId, String token) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BudException(NOT_FOUND_POST));
+        Long userId = tokenProvider.getId(token);
         if (!Objects.equals(answer.getUser().getId(), userId)) {
             throw new BudException(NOT_POST_OWNER);
         }
@@ -112,17 +119,19 @@ public class AnswerService {
         return answerId;
     }
 
-    public boolean registerOrCancelLike(String answerId, Long userId) {
+    public boolean registerOrCancelLike(String answerId, String token) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BudException(NOT_FOUND_POST));
+        Long userId = tokenProvider.getId(token);
         answer.registerOrCancelLike(userId);
         answerRepository.save(answer);
         return true;
     }
 
-    public List<AnswerResponse> retrieve(String postId, Long userId){
+    public List<AnswerResponse> retrieve(String postId, String token){
         if(!postRepository.findByIdAndType(postId, PostType.QUESTION))
             throw new BudException(NOT_FOUND_POST);
+        Long userId = tokenProvider.getId(token);
         List<Answer> answers = answerRepository.findByPostId(postId);
         AnswerPin answerPin = answerPinRepository.findById(postId)
                 .orElse(AnswerPin.builder().build());

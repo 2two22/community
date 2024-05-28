@@ -1,6 +1,7 @@
 package twotwo.community.post.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,41 +19,41 @@ public class AnswerController {
     private final AnswerService answerService;
 
     @PostMapping
-    public ResponseEntity<String> create(Long userId, @RequestPart AnswerRequest form, @RequestPart(required = false) List<MultipartFile> images) {
-        return ResponseEntity.ok(answerService.create(userId, images, form));
+    public ResponseEntity<String> create(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @RequestPart AnswerRequest form, @RequestPart(required = false) List<MultipartFile> images) {
+        return ResponseEntity.ok(answerService.create(token, images, form));
     }
 
     @PutMapping("/{answerId}")
-    public ResponseEntity<String> update(Long userId, @PathVariable String answerId, @RequestPart AnswerRequest form, @RequestPart(required = false) List<MultipartFile> images) {
-        return ResponseEntity.ok(answerService.update(answerId, images, form, userId));
+    public ResponseEntity<String> update(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String answerId, @RequestPart AnswerRequest form, @RequestPart(required = false) List<MultipartFile> images) {
+        return ResponseEntity.ok(answerService.update(answerId, images, form, token));
     }
 
     @DeleteMapping("/{answerId}")
-    public ResponseEntity<Void> delete(Long userId, @PathVariable String answerId) {
-        answerService.delete(answerId, userId);
+    public ResponseEntity<Void> delete(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String answerId) {
+        answerService.delete(answerId, token);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{answerId}/pin")
-    public ResponseEntity<Void> pinnedAnswer(Long userId, @PathVariable String answerId) {
-        answerService.pinnedAnswer(answerId, userId);
+    public ResponseEntity<Void> pinnedAnswer(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String answerId) {
+        answerService.pinnedAnswer(answerId, token);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{answerId}/pin")
-    public ResponseEntity<Void> cancelPinnedAnswer(Long userId, @PathVariable String answerId) {
-        answerService.cancelPinnedAnswer(answerId, userId);
+    public ResponseEntity<Void> cancelPinnedAnswer(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String answerId) {
+        answerService.cancelPinnedAnswer(answerId, token);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{answerId}/like")
-    public ResponseEntity<Void> registerOrCancelLike(Long userId, @PathVariable String answerId) {
-        answerService.registerOrCancelLike(answerId, userId);
+    public ResponseEntity<Void> registerOrCancelLike(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String answerId) {
+        answerService.registerOrCancelLike(answerId, token);
         return ResponseEntity.ok().build();
     }
     @GetMapping("/{postId}")
-    public ResponseEntity<List<AnswerResponse>> retrieve(Long userId, @PathVariable String postId) {
-        return ResponseEntity.ok(answerService.retrieve(postId, userId));
+    public ResponseEntity<List<AnswerResponse>> retrieve(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String postId) {
+        return ResponseEntity.ok(answerService.retrieve(postId, token));
     }
 //
 //    @GetMapping
