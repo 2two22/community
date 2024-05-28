@@ -19,13 +19,13 @@ public class AnswerController {
     private final AnswerService answerService;
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @RequestPart AnswerRequest form, @RequestPart(required = false) List<MultipartFile> images) {
-        return ResponseEntity.ok(answerService.create(token, images, form));
+    public ResponseEntity<String> create(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @RequestPart AnswerRequest createQnaAnswerRequest, @RequestPart(required = false) List<MultipartFile> images) {
+        return ResponseEntity.ok(answerService.create(token, images, createQnaAnswerRequest));
     }
 
     @PutMapping("/{answerId}")
-    public ResponseEntity<String> update(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String answerId, @RequestPart AnswerRequest form, @RequestPart(required = false) List<MultipartFile> images) {
-        return ResponseEntity.ok(answerService.update(answerId, images, form, token));
+    public ResponseEntity<String> update(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String answerId, @RequestPart AnswerRequest updateQnaAnswerRequest, @RequestPart(required = false) List<MultipartFile> images) {
+        return ResponseEntity.ok(answerService.update(answerId, images, updateQnaAnswerRequest, token));
     }
 
     @DeleteMapping("/{answerId}")

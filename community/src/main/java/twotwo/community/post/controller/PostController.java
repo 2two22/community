@@ -19,13 +19,13 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @RequestPart PostRequest form, @RequestPart(required = false) List<MultipartFile> images) {
-        return ResponseEntity.ok(postService.create(token, images, form));
+    public ResponseEntity<String> create(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @RequestPart PostRequest createPostRequest, @RequestPart(required = false) List<MultipartFile> images) {
+        return ResponseEntity.ok(postService.create(token, images, createPostRequest));
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<String> update(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String postId, @RequestPart PostRequest form, @RequestPart(required = false) List<MultipartFile> images) {
-        return ResponseEntity.ok(postService.update(postId, images, form, token));
+    public ResponseEntity<String> update(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String postId, @RequestPart PostRequest updatePostRequest, @RequestPart(required = false) List<MultipartFile> images) {
+        return ResponseEntity.ok(postService.update(postId, images, updatePostRequest, token));
     }
 
     @DeleteMapping("/{postId}")
@@ -51,5 +51,10 @@ public class PostController {
     public ResponseEntity<Void> registerOrCancelLike(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String postId) {
         postService.registerOrCancelLike(postId, token);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{userId}/count")
+    public ResponseEntity<Long> getUsersPostCount(@PathVariable Long userId){
+        return ResponseEntity.ok(postService.getUsersPostCount(userId));
     }
 }

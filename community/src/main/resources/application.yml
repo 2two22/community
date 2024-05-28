@@ -4,12 +4,6 @@ spring:
   data:
     mongodb:
       uri: masking
-  cloud:
-    openfeign:
-      client:
-        config:
-          userClient:
-            url: localhost:8080
   jwt:
     secret: ZGF5b25lLXNwcmluZy1ib290LWRpdmlkZW5kLXByb2plY3QtdHV0b3JpYWwtand0LXNlY3JldC1rZXkKZGF5b25lLXNwcmluZy1ib290LWRpdmlkZW5kLXByb2plY3QtdHV0b3JpYWwtand0LXNlY3JldC1rZXkK
 
@@ -31,3 +25,5 @@ logging:
       amazons:
         util:
           EC2MetadataUtils: ERROR
+feign:
+  user: localhost:8080
