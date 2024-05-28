@@ -16,6 +16,7 @@ import twotwo.community.dto.request.PostRequest;
 import twotwo.community.dto.response.PostResponse;
 import twotwo.community.dto.response.UserResponse;
 import twotwo.community.exception.BudException;
+import twotwo.community.util.TokenProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,22 +35,24 @@ public class PostService {
     private final PostRepository postRepository;
     private final S3Client s3Client;
     private final UserClient userClient;
+    private final TokenProvider tokenProvider;
 
-    public String create(Long userId, List<MultipartFile> images, PostRequest request) {
+    public String create(String token, List<MultipartFile> images, PostRequest request) {
 
         // TODO : request to user server
-        UserResponse response = userClient.getUserInfo(userId);
+        UserResponse response = userClient.getUserInfo(tokenProvider.getUserId(token));
         return postRepository.save(Post.of(request, saveImages(images), response)).getTitle();
     }
 
-    public String update(String postId, List<MultipartFile> images, PostRequest request, Long userId) {
+    public String update(String postId, List<MultipartFile> images, PostRequest request, String token) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BudException(NOT_FOUND_POST));
-        UserResponse response = userClient.getUserInfo(userId);
+        Long userId = tokenProvider.getId(token);
         if (!Objects.equals(post.getUser().getId(), userId)) {
             throw new BudException(NOT_POST_OWNER);
         }
+        UserResponse response = userClient.getUserInfo(token);
 
 //        if (Objects.nonNull(post.getQnaAnswerPin())) {
 //            throw new BudException(CHANGE_IMPOSSIBLE_PINNED_ANSWER);
@@ -119,20 +122,20 @@ public class PostService {
 //                postImageQuerydsl.findImagePathAllByPostId(postId));
 //    }
 
-    public String delete(String postId, Long userId) {
+    public String delete(String postId, String token) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BudException(NOT_FOUND_POST));
-        if (!Objects.equals(post.getUser().getId(), userId)) {
+        if (!Objects.equals(post.getUser().getId(), tokenProvider.getId(token))) {
             throw new BudException(NOT_POST_OWNER);
         }
         postRepository.delete(post);
         return postId;
     }
 
-    public boolean registerOrCancelLike(String postId, Long userId) {
+    public boolean registerOrCancelLike(String postId, String token) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BudException(NOT_FOUND_POST));
-        post.registerOrCancelLike(userId);
+        post.registerOrCancelLike(tokenProvider.getId(token));
         postRepository.save(post);
         return true;
     }
@@ -161,13 +164,15 @@ public class PostService {
 //    }
 
 
-    public PostResponse retrieve(Long userId, String postId) {
+    public PostResponse retrieve(String token, String postId) {
+        Long userId = tokenProvider.getId(token);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BudException(NOT_FOUND_POST));
         return PostResponse.from(post, userId);
     }
 
-    public List<PostResponse> retrievePosts(Long userId, int page, int size, PostType type) {
+    public List<PostResponse> retrievePosts(String token, int page, int size, PostType type) {
+        Long userId = tokenProvider.getId(token);
         PageRequest request = PageRequest.of(page, size);
         return postRepository.findAllByTypeOrderByCreatedAtDesc(type, request)
                 .stream().map(post -> PostResponse.from(post, userId))

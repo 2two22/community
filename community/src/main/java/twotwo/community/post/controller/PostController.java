@@ -1,6 +1,7 @@
 package twotwo.community.post.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,37 +19,37 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<String> create(Long userId, @RequestPart PostRequest form, @RequestPart(required = false) List<MultipartFile> images) {
-        return ResponseEntity.ok(postService.create(userId, images, form));
+    public ResponseEntity<String> create(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @RequestPart PostRequest form, @RequestPart(required = false) List<MultipartFile> images) {
+        return ResponseEntity.ok(postService.create(token, images, form));
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<String> update(Long userId, @PathVariable String postId, @RequestPart PostRequest form, @RequestPart(required = false) List<MultipartFile> images) {
-        return ResponseEntity.ok(postService.update(postId, images, form, userId));
+    public ResponseEntity<String> update(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String postId, @RequestPart PostRequest form, @RequestPart(required = false) List<MultipartFile> images) {
+        return ResponseEntity.ok(postService.update(postId, images, form, token));
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> delete(Long userId, @PathVariable String postId) {
-        postService.delete(postId, userId);
+    public ResponseEntity<Void> delete(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String postId) {
+        postService.delete(postId, token);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostResponse> retrieve(Long userId, @PathVariable String postId) {
-        return ResponseEntity.ok(postService.retrieve(userId, postId));
+    public ResponseEntity<PostResponse> retrieve(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String postId) {
+        return ResponseEntity.ok(postService.retrieve(token, postId));
     }
 
     @GetMapping
     public ResponseEntity<List<PostResponse>> retrieve(@RequestParam(required = false, defaultValue = "0") int page,
                                                        @RequestParam(required = false, defaultValue = "10") int size,
                                                        @RequestParam(required = false) PostType postType,
-                                                       Long userId) {
-        return ResponseEntity.ok(postService.retrievePosts(userId, page, size, postType));
+                                                       @RequestHeader(value = HttpHeaders.AUTHORIZATION) String token) {
+        return ResponseEntity.ok(postService.retrievePosts(token, page, size, postType));
     }
 
     @PostMapping("/{postId}/like")
-    public ResponseEntity<Void> registerOrCancelLike(Long userId, @PathVariable String postId) {
-        postService.registerOrCancelLike(postId, userId);
+    public ResponseEntity<Void> registerOrCancelLike(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String postId) {
+        postService.registerOrCancelLike(postId, token);
         return ResponseEntity.ok().build();
     }
 }

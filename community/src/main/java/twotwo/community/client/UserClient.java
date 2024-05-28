@@ -1,12 +1,13 @@
 package twotwo.community.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import twotwo.community.dto.response.UserResponse;
 
-@FeignClient(value = "user", url = "localhost:8081")
+@FeignClient(name = "userClient", value = "userClient")
 public interface UserClient {
-    @GetMapping(value = "/users/{userId}")
-    UserResponse getUserInfo(@PathVariable Long userId);
+    @GetMapping(value = "/member")
+    UserResponse getUserInfo(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token);
 }

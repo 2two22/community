@@ -13,6 +13,7 @@ import twotwo.community.dto.response.CommentResponse;
 import twotwo.community.dto.response.UserResponse;
 import twotwo.community.exception.BudException;
 import twotwo.community.exception.ErrorCode;
+import twotwo.community.util.TokenProvider;
 
 import java.util.Objects;
 
@@ -24,50 +25,49 @@ public class AnswerCommentService {
     private final AnswerRepository answerRepository;
     private final AnswerCommentRepository commentRepository;
     private final UserClient userClient;
+    private final TokenProvider tokenProvider;
 
-    public CommentResponse create(String answerId, Long userId, String content) {
+    public CommentResponse create(String answerId, String token, String content) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new BudException(ErrorCode.NOT_FOUND_POST));
-        UserResponse user = userClient.getUserInfo(userId);
+        UserResponse user = userClient.getUserInfo(token);
         answer.increaseCommentCount();
         answerRepository.save(answer);
 
-        return CommentResponse.from(commentRepository.save(AnswerComment.of(answerId, content, user)), userId);
+        return CommentResponse.from(commentRepository.save(AnswerComment.of(answerId, content, user)), user.id());
     }
 
-    public CommentResponse createReComment(String commentId, Long userId, String content) {
+    public CommentResponse createReComment(String commentId, String token, String content) {
         AnswerComment parent = commentRepository.findByIdAndParentCommentIdIsNull(commentId)
                 .orElseThrow(() -> new BudException(ErrorCode.NOT_FOUND_POST));
         Answer answer = answerRepository.findById(parent.getAnswerId())
                 .orElseThrow(() -> new BudException(ErrorCode.NOT_FOUND_POST));
-        UserResponse user = userClient.getUserInfo(userId);
+        UserResponse user = userClient.getUserInfo(token);
         answer.increaseCommentCount();
         answerRepository.save(answer);
 
-        return CommentResponse.from(commentRepository.save(AnswerComment.of(parent.getAnswerId(), commentId, content, user)), userId);
+        return CommentResponse.from(commentRepository.save(AnswerComment.of(parent.getAnswerId(), commentId, content, user)), user.id());
     }
 
-    public CommentResponse update(String commentId, Long userId, String content) {
+    public CommentResponse update(String commentId, String token, String content) {
         AnswerComment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BudException(ErrorCode.NOT_FOUND_POST));
-
-        if (!Objects.equals(userId, comment.getUser().getId()))
+        if (!Objects.equals(tokenProvider.getId(token), comment.getUser().getId()))
             throw new BudException(ErrorCode.NOT_POST_OWNER);
-
-        UserResponse user = userClient.getUserInfo(userId);
+        UserResponse user = userClient.getUserInfo(token);
         comment.update(content, user);
         commentRepository.save(comment);
 
-        return CommentResponse.from(comment, userId);
+        return CommentResponse.from(comment, user.id());
     }
 
-    public String delete(String commentId, Long userId) {
+    public String delete(String commentId, String token) {
         AnswerComment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BudException(ErrorCode.NOT_FOUND_POST));
         Answer answer = answerRepository.findById(comment.getAnswerId())
                 .orElseThrow(() -> new BudException(ErrorCode.NOT_FOUND_POST));
 
-        if (!Objects.equals(userId, comment.getUser().getId()))
+        if (!Objects.equals(tokenProvider.getId(token), comment.getUser().getId()))
             throw new BudException(ErrorCode.NOT_POST_OWNER);
 
         answer.decreaseCommentCount();
@@ -77,21 +77,21 @@ public class AnswerCommentService {
         return commentId;
     }
 
-    public boolean registerOrCancelLike(String commentId, Long userId) {
+    public boolean registerOrCancelLike(String commentId, String token) {
         AnswerComment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BudException(NOT_FOUND_POST));
-        comment.registerOrCancelLike(userId);
+        comment.registerOrCancelLike(tokenProvider.getId(token));
         commentRepository.save(comment);
         return true;
     }
 
-    public Slice<CommentResponse> retrieveComments(String postId, Long userId, int page, int size) {
+    public Slice<CommentResponse> retrieveComments(String postId, String token, int page, int size) {
         PageRequest request = PageRequest.of(page, size);
         Slice<AnswerComment> comments = commentRepository.findByAnswerIdAndParentCommentIdIsNullOrderByCreatedAtDesc(postId, request)
                 .map(comment -> {
                     comment.addReComments(commentRepository.findByParentCommentId(comment.getId()));
                     return comment;
                 });
-        return comments.map(comment -> CommentResponse.from(comment, userId));
+        return comments.map(comment -> CommentResponse.from(comment, tokenProvider.getId(token)));
     }
 }
