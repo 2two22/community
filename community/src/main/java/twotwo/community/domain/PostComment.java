@@ -44,6 +44,10 @@ public class PostComment extends BaseTimeDocument{
                 .build();
     }
 
+    public void update(UserResponse user){
+        this.user = User.from(user);
+    }
+
     public void update(String content, UserResponse user){
         this.content = content;
         this.user = User.from(user);

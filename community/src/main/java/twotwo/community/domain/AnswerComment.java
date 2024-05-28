@@ -49,6 +49,10 @@ public class AnswerComment extends BaseTimeDocument {
         this.user = User.from(user);
     }
 
+    public void update(UserResponse user){
+        this.user = User.from(user);
+    }
+
     public void registerOrCancelLike(Long userId) {
         if (isUserLiked(userId))
             cancelLike(userId);
