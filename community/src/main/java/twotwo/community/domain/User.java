@@ -18,8 +18,8 @@ public class User {
     public static User from(UserResponse response){
         return User.builder()
                 .id(response.id())
-                .nickname(response.nickname())
-                .profilePath(response.profilePath())
+                .nickname(response.nickName())
+                .profilePath(response.profileUrl())
                 .build();
     }
 }

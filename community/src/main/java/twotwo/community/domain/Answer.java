@@ -37,8 +37,11 @@ public class Answer extends BaseTimeDocument {
                 .build();
     }
 
+    public void update(UserResponse user){
+        this.user = User.from(user);
+    }
+
     public void update(AnswerRequest form, List<String> images, UserResponse user) {
-        this.content = form.getContent();
         this.content = form.getContent();
         this.images = images;
         this.user = User.from(user);

@@ -14,4 +14,5 @@ public interface AnswerCommentRepository extends MongoRepository<AnswerComment, 
     Optional<AnswerComment> findByIdAndParentCommentIdIsNull(String commentId);
 
     List<AnswerComment> findByParentCommentId(String parentCommentId);
+    List<AnswerComment> findByUser_Id(Long userId);
 }

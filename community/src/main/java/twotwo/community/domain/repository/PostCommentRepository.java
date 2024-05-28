@@ -13,4 +13,5 @@ public interface PostCommentRepository extends MongoRepository<PostComment, Stri
     Page<PostComment> findByPostIdAndParentCommentIdIsNullOrderByCreatedAtDesc(String postId, PageRequest request);
     Optional<PostComment> findByIdAndParentCommentIdIsNull(String commentId);
     List<PostComment> findByParentCommentId(String parentCommentId);
+    List<PostComment> findByUser_Id(Long userId);
 }
