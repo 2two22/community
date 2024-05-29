@@ -1,5 +1,6 @@
 package twotwo.community.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import twotwo.community.domain.AnswerComment;
 import twotwo.community.domain.Post;
@@ -18,6 +19,7 @@ public record CommentResponse(
         UserResponse user,
         int likeCount,
         boolean isUserLiked,
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         List<CommentResponse> reComments,
         int numberOfComments
 
