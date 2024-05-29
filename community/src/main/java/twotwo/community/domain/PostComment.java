@@ -25,12 +25,13 @@ public class PostComment extends BaseTimeDocument{
     @Builder.Default
     private List<Long> likes = new ArrayList<>();
     @Transient
-    private List<PostComment> reComments = new ArrayList<>();
+    private List<PostComment> reComments;
 
     public static PostComment of(String postId, String content, UserResponse user){
         return PostComment.builder()
                 .postId(postId)
                 .content(content)
+                .parentCommentId(null)
                 .user(User.from(user))
                 .build();
     }
@@ -72,6 +73,7 @@ public class PostComment extends BaseTimeDocument{
     }
 
     public void addReComments(List<PostComment> reComments){
-        this.reComments = reComments;
+        this.reComments = new ArrayList<>();
+        this.reComments.addAll(reComments);
     }
 }
