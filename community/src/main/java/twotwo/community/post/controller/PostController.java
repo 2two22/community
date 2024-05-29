@@ -2,7 +2,6 @@ package twotwo.community.post.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +40,15 @@ public class PostController {
         return ResponseEntity.ok(postService.retrieve(token, postId));
     }
 
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<Page<PostResponse>> retrieve(@RequestParam(required = false, defaultValue = "0") int page,
+                                                 @RequestParam(required = false, defaultValue = "10") int size,
+                                                 @RequestHeader(value = HttpHeaders.AUTHORIZATION) String token,
+                                                 @RequestParam(required = false) PostType postType,
+                                                 @PathVariable Long userId) {
+        return ResponseEntity.ok(postService.retrieveMyPosts(token, userId, page, size, postType));
+    }
+
     @GetMapping
     public ResponseEntity<Page<PostResponse>> retrieve(@RequestParam(required = false, defaultValue = "0") int page,
                                                        @RequestParam(required = false, defaultValue = "10") int size,
@@ -56,7 +64,7 @@ public class PostController {
     }
 
     @GetMapping("/{userId}/count")
-    public ResponseEntity<Long> getUsersPostCount(@PathVariable Long userId){
+    public ResponseEntity<Long> getUsersPostCount(@PathVariable Long userId) {
         return ResponseEntity.ok(postService.getUsersPostCount(userId));
     }
 }
