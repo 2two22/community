@@ -9,7 +9,7 @@ import java.util.List;
 
 @Builder
 public record PostResponse(
-        PostType type,
+        PostType postType,
         String id,
         String title,
         String content,
@@ -22,7 +22,7 @@ public record PostResponse(
 ) {
     public static PostResponse from(Post post, Long userId) {
         return PostResponse.builder()
-                .type(post.getType())
+                .postType(post.getType())
                 .id(post.getId())
                 .content(post.getContent())
                 .title(post.getTitle())

@@ -2,6 +2,7 @@ package twotwo.community.post.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.Lint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -18,6 +19,7 @@ import twotwo.community.dto.request.PostRequest;
 import twotwo.community.dto.response.PostResponse;
 import twotwo.community.dto.response.UserResponse;
 import twotwo.community.exception.BudException;
+import twotwo.community.exception.ErrorCode;
 import twotwo.community.util.TokenProvider;
 
 import java.util.ArrayList;
@@ -56,73 +58,11 @@ public class PostService {
         }
         UserResponse response = userClient.getUserInfo(token);
 
-//        if (Objects.nonNull(post.getQnaAnswerPin())) {
-//            throw new BudException(CHANGE_IMPOSSIBLE_PINNED_ANSWER);
-//        }
-
         post.update(request, saveImages(images), response);
 
         deleteImages(post);
         return request.getTitle();
     }
-
-//    public Page<SearchPost.Response> searchPosts(Member member,
-//                                                 String keyword,
-//                                                 PostSortType sort,
-//                                                 Order order,
-//                                                 int page,
-//                                                 int size,
-//                                                 PostType postType) {
-//
-//        Page<PostDto> posts = postQuerydsl.findAllByPostStatus(member.getId(),
-//                keyword, sort, order, PageRequest.of(page, size), postType);
-//
-//        return new PageImpl<>(
-//                posts.stream()
-//                        .map(post -> SearchPost.Response.of(post,
-//                                postImageQuerydsl
-//                                        .findImagePathAllByPostId(post.getId())))
-//                        .collect(Collectors.toList()),
-//                posts.getPageable(),
-//                posts.getTotalElements());
-//    }
-
-//    public Page<SearchMyPagePost.Response> searchMyPagePosts(Member member,
-//                                                             Long myPageUserId,
-//                                                             PostType postType,
-//                                                             Pageable pageable) {
-//
-//        Page<PostDto> posts = postQuerydsl.findAllByMyPagePost(
-//                member.getId(),
-//                myPageUserId,
-//                postType,
-//                pageable
-//        );
-//
-//        return new PageImpl<>(
-//                posts.stream()
-//                        .map(post -> SearchMyPagePost.Response.of(post,
-//                                postImageQuerydsl.findImagePathAllByPostId(post.getId())))
-//                        .collect(Collectors.toList()),
-//                pageable,
-//                posts.getTotalElements()
-//        );
-//    }
-
-//    public SearchPost.Response searchPost(Member member, Long postId) {
-//        Post post = postRepository.findById(postId)
-//                .orElseThrow(() -> new BudException(NOT_FOUND_POST));
-//
-//        PostDto postDto =
-//                postQuerydsl.findByPostId(member.getId(), postId);
-//
-//        post.hitCountUp();
-//
-//        postRepository.save(post);
-//
-//        return SearchPost.Response.of(postDto,
-//                postImageQuerydsl.findImagePathAllByPostId(postId));
-//    }
 
     public String delete(String postId, String token) {
         Post post = postRepository.findById(postId)
@@ -160,11 +100,6 @@ public class PostService {
         post.getImages().forEach(s3Client::delete);
     }
 
-//    private void deleteQnaAnswerImagesFromS3(QnaAnswer qnaAnswer) {
-//        qnaAnswer.getQnaAnswerImages()
-//                .forEach(image -> s3Client.deleteImage(image.getImagePath()));
-//    }
-
 
     public PostResponse retrieve(String token, String postId) {
         Long userId = tokenProvider.getId(token);
@@ -183,6 +118,15 @@ public class PostService {
 
     public Long getUsersPostCount(Long userId) {
         return postRepository.countByUser_Id(userId);
+    }
+
+    public Page<PostResponse> retrieveMyPosts(String token, Long userId, int page, int size, PostType type){
+        Long tokenUserId = tokenProvider.getId(token);
+        if(!Objects.equals(userId, tokenUserId))
+            throw new BudException(NOT_POST_OWNER);
+        PageRequest request = PageRequest.of(page, size);
+        return postRepository.findAllByUser_IdAndTypeOrderByCreatedAtDesc(type, request)
+                .map(post -> PostResponse.from(post, userId));
     }
 }
 
