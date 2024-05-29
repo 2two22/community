@@ -6,6 +6,7 @@ import twotwo.community.domain.Post;
 import twotwo.community.domain.PostComment;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,7 @@ public record CommentResponse(
                 .user(UserResponse.from(comment.getUser()))
                 .isUserLiked(comment.isUserLiked(userId))
                 .likeCount(comment.getLikes().size())
-                .reComments(comment.getReComments().stream().map(re->ofRecomment(re, userId)).collect(Collectors.toList()))
+                .reComments(new ArrayList<>(comment.getReComments().stream().map(re->ofRecomment(re, userId)).collect(Collectors.toList())))
                 .build();
     }
 
@@ -62,7 +63,7 @@ public record CommentResponse(
                 .createdAt(comment.getCreatedAt())
                 .user(UserResponse.from(comment.getUser()))
                 .isUserLiked(comment.isUserLiked(userId))
-                .reComments(comment.getReComments().stream().map(re->ofRecomment(re, userId)).collect(Collectors.toList()))
+                .reComments(new ArrayList<>(comment.getReComments().stream().map(re->ofRecomment(re, userId)).collect(Collectors.toList())))
                 .likeCount(comment.getLikes().size())
                 .build();
     }
