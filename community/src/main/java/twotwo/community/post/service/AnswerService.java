@@ -129,7 +129,7 @@ public class AnswerService {
     }
 
     public List<AnswerResponse> retrieve(String postId, String token){
-        if(!postRepository.findByIdAndType(postId, PostType.QUESTION))
+        if(!postRepository.findByIdAndType(postId, PostType.QNA))
             throw new BudException(NOT_FOUND_POST);
         Long userId = tokenProvider.getId(token);
         List<Answer> answers = answerRepository.findByPostId(postId);
