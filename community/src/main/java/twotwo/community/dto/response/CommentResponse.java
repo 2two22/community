@@ -7,6 +7,7 @@ import twotwo.community.domain.PostComment;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 public record CommentResponse(
@@ -28,6 +29,29 @@ public record CommentResponse(
                 .user(UserResponse.from(comment.getUser()))
                 .isUserLiked(comment.isUserLiked(userId))
                 .likeCount(comment.getLikes().size())
+                .reComments(comment.getReComments().stream().map(re->ofRecomment(re, userId)).collect(Collectors.toList()))
+                .build();
+    }
+
+    public static CommentResponse ofRecomment(PostComment comment, Long userId) {
+        return CommentResponse.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .user(UserResponse.from(comment.getUser()))
+                .isUserLiked(comment.isUserLiked(userId))
+                .likeCount(comment.getLikes().size())
+                .build();
+    }
+
+    public static CommentResponse ofRecomment(AnswerComment comment, Long userId) {
+        return CommentResponse.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .user(UserResponse.from(comment.getUser()))
+                .isUserLiked(comment.isUserLiked(userId))
+                .likeCount(comment.getLikes().size())
                 .build();
     }
 
@@ -38,6 +62,7 @@ public record CommentResponse(
                 .createdAt(comment.getCreatedAt())
                 .user(UserResponse.from(comment.getUser()))
                 .isUserLiked(comment.isUserLiked(userId))
+                .reComments(comment.getReComments().stream().map(re->ofRecomment(re, userId)).collect(Collectors.toList()))
                 .likeCount(comment.getLikes().size())
                 .build();
     }
