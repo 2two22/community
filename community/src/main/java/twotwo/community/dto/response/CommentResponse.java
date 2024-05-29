@@ -30,7 +30,7 @@ public record CommentResponse(
                 .user(UserResponse.from(comment.getUser()))
                 .isUserLiked(comment.isUserLiked(userId))
                 .likeCount(comment.getLikes().size())
-                .reComments(new ArrayList<>(comment.getReComments().stream().map(re->ofRecomment(re, userId)).collect(Collectors.toList())))
+                .reComments(comment.getReComments().isEmpty() ? new ArrayList<>() : comment.getReComments().stream().map(re -> ofRecomment(re, userId)).collect(Collectors.toList()))
                 .build();
     }
 
@@ -63,7 +63,7 @@ public record CommentResponse(
                 .createdAt(comment.getCreatedAt())
                 .user(UserResponse.from(comment.getUser()))
                 .isUserLiked(comment.isUserLiked(userId))
-                .reComments(new ArrayList<>(comment.getReComments().stream().map(re->ofRecomment(re, userId)).collect(Collectors.toList())))
+                .reComments(comment.getReComments().isEmpty() ? new ArrayList<>() : comment.getReComments().stream().map(re -> ofRecomment(re, userId)).collect(Collectors.toList()))
                 .likeCount(comment.getLikes().size())
                 .build();
     }

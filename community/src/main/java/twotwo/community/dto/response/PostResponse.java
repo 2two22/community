@@ -2,12 +2,14 @@ package twotwo.community.dto.response;
 
 import lombok.Builder;
 import twotwo.community.domain.Post;
+import twotwo.community.domain.PostType;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
 public record PostResponse(
+        PostType type,
         String id,
         String title,
         String content,
@@ -20,6 +22,7 @@ public record PostResponse(
 ) {
     public static PostResponse from(Post post, Long userId) {
         return PostResponse.builder()
+                .type(post.getType())
                 .id(post.getId())
                 .content(post.getContent())
                 .title(post.getTitle())
