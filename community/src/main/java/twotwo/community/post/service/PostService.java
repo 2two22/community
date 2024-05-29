@@ -176,7 +176,8 @@ public class PostService {
     public Page<PostResponse> retrievePosts(String token, int page, int size, PostType type) {
         Long userId = tokenProvider.getId(token);
         PageRequest request = PageRequest.of(page, size);
-        return postRepository.findAllByTypeOrderByCreatedAtDesc(type, request)
+
+        return postRepository.findAllByTypeInOrderByCreatedAtDesc(type.getMyTypes(), request)
                 .map(post -> PostResponse.from(post, userId));
     }
 

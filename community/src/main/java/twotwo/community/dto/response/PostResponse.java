@@ -12,22 +12,22 @@ public record PostResponse(
         String title,
         String content,
         LocalDateTime createdAt,
-        List<String> images,
-        UserResponse user,
+        List<String> imageUrls,
+        UserResponse member,
         int likeCount,
         int commentCount,
-        boolean isUserLiked
+        boolean like
 ) {
     public static PostResponse from(Post post, Long userId) {
         return PostResponse.builder()
                 .id(post.getId())
                 .content(post.getContent())
                 .title(post.getTitle())
-                .images(post.getImages())
+                .imageUrls(post.getImages())
                 .createdAt(post.getCreatedAt())
-                .user(UserResponse.from(post.getUser()))
+                .member(UserResponse.from(post.getUser()))
                 .commentCount(post.getCommentCount())
-                .isUserLiked(post.isUserLiked(userId))
+                .like(post.isUserLiked(userId))
                 .likeCount(post.getLikes().size())
                 .build();
     }
