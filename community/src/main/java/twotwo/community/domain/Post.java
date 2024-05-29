@@ -34,6 +34,7 @@ public class Post extends BaseTimeDocument {
                 .content(form.getContent())
                 .images(images)
                 .user(User.from(user))
+                .type(form.getPostType())
                 .build();
     }
 
