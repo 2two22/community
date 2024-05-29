@@ -2,7 +2,9 @@ package twotwo.community.post.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -171,15 +173,14 @@ public class PostService {
         return PostResponse.from(post, userId);
     }
 
-    public List<PostResponse> retrievePosts(String token, int page, int size, PostType type) {
+    public Page<PostResponse> retrievePosts(String token, int page, int size, PostType type) {
         Long userId = tokenProvider.getId(token);
         PageRequest request = PageRequest.of(page, size);
         return postRepository.findAllByTypeOrderByCreatedAtDesc(type, request)
-                .stream().map(post -> PostResponse.from(post, userId))
-                .collect(Collectors.toList());
+                .map(post -> PostResponse.from(post, userId));
     }
 
-    public Long getUsersPostCount(Long userId){
+    public Long getUsersPostCount(Long userId) {
         return postRepository.countByUser_Id(userId);
     }
 }

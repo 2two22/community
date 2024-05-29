@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AnswerCommentRepository extends MongoRepository<AnswerComment, String> {
-    Page<AnswerComment> findByAnswerIdAndParentCommentIdIsNullOrderByCreatedAtDesc(String answerId, PageRequest request);
+    List<AnswerComment> findByAnswerIdAndParentCommentIdIsNullOrderByCreatedAtDesc(String answerId);
 
     Optional<AnswerComment> findByIdAndParentCommentIdIsNull(String commentId);
 

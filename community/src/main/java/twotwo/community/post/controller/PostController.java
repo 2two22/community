@@ -1,6 +1,8 @@
 package twotwo.community.post.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +42,7 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostResponse>> retrieve(@RequestParam(required = false, defaultValue = "0") int page,
+    public ResponseEntity<Page<PostResponse>> retrieve(@RequestParam(required = false, defaultValue = "0") int page,
                                                        @RequestParam(required = false, defaultValue = "10") int size,
                                                        @RequestParam(required = false) PostType postType,
                                                        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String token) {

@@ -12,6 +12,8 @@ import twotwo.community.domain.PostType;
 import twotwo.community.dto.request.CommentRequest;
 import twotwo.community.dto.response.CommentResponse;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/answers")
 @RequiredArgsConstructor
@@ -42,12 +44,9 @@ public class AnswerCommentController {
 
 
     @GetMapping("/{answerId}/comments")
-    public ResponseEntity<Slice<CommentResponse>> retrieve(@RequestParam(required = false, defaultValue = "0") int page,
-                                                           @RequestParam(required = false, defaultValue = "10") int size,
-                                                           @RequestParam(required = false) PostType postType,
-                                                           @PathVariable String answerId,
-                                                           @RequestHeader(value = HttpHeaders.AUTHORIZATION) String token) {
-        return ResponseEntity.ok(commentService.retrieveComments(answerId, token, page, size));
+    public ResponseEntity<List<CommentResponse>> retrieve(@PathVariable String answerId,
+                                                          @RequestHeader(value = HttpHeaders.AUTHORIZATION) String token) {
+        return ResponseEntity.ok(commentService.retrieveComments(answerId, token));
     }
 
     @PostMapping("/comments/{commentId}/like")
