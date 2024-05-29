@@ -25,7 +25,7 @@ public class PostComment extends BaseTimeDocument{
     @Builder.Default
     private List<Long> likes = new ArrayList<>();
     @Transient
-    private List<PostComment> reComments;
+    private List<PostComment> reComments = new ArrayList<>();
 
     public static PostComment of(String postId, String content, UserResponse user){
         return PostComment.builder()
