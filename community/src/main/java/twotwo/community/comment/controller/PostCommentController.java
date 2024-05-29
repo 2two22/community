@@ -49,7 +49,6 @@ public class PostCommentController {
     @GetMapping("/{postId}/comments")
     public ResponseEntity<Slice<CommentResponse>> retrieve(@RequestParam(required = false, defaultValue = "0") int page,
                                                            @RequestParam(required = false, defaultValue = "10") int size,
-                                                           @RequestParam(required = false) PostType postType,
                                                            @PathVariable String postId,
                                                            @RequestHeader(value = HttpHeaders.AUTHORIZATION) String token) {
         return ResponseEntity.ok(commentService.retrieveComments(postId, token, page, size));

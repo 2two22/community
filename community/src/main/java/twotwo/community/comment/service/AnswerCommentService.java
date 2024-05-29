@@ -15,7 +15,9 @@ import twotwo.community.exception.BudException;
 import twotwo.community.exception.ErrorCode;
 import twotwo.community.util.TokenProvider;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static twotwo.community.exception.ErrorCode.NOT_FOUND_POST;
 
@@ -85,13 +87,10 @@ public class AnswerCommentService {
         return true;
     }
 
-    public Slice<CommentResponse> retrieveComments(String postId, String token, int page, int size) {
-        PageRequest request = PageRequest.of(page, size);
-        Slice<AnswerComment> comments = commentRepository.findByAnswerIdAndParentCommentIdIsNullOrderByCreatedAtDesc(postId, request)
-                .map(comment -> {
-                    comment.addReComments(commentRepository.findByParentCommentId(comment.getId()));
-                    return comment;
-                });
-        return comments.map(comment -> CommentResponse.from(comment, tokenProvider.getId(token)));
+    public List<CommentResponse> retrieveComments(String postId, String token) {
+        Long userId = tokenProvider.getId(token);
+        List<AnswerComment> comments = commentRepository.findByAnswerIdAndParentCommentIdIsNullOrderByCreatedAtDesc(postId).stream()
+                .peek(comment -> comment.addReComments(commentRepository.findByParentCommentId(comment.getId()))).collect(Collectors.toList());
+        return comments.stream().map(comment -> CommentResponse.from(comment, userId)).collect(Collectors.toList());
     }
 }
