@@ -26,4 +26,4 @@ logging:
         util:
           EC2MetadataUtils: ERROR
 feign:
-  user: localhost:8080
+  user: http://user-service
