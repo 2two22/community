@@ -59,8 +59,8 @@ public class AnswerService {
         if (answerPinRepository.existsByAnswerIdAndPostId(answerId, answer.getPostId()))
             throw new BudException(CHANGE_IMPOSSIBLE_PINNED_ANSWER);
 
-        answer.update(request, saveImages(images), response);
         deleteImages(answer);
+        answer.update(request, saveImages(images), response);
         answerRepository.save(answer);
         return answerId;
     }

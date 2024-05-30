@@ -58,8 +58,8 @@ public class PostService {
         }
         UserResponse response = userClient.getUserInfo(token);
 
-        post.update(request, saveImages(images), response);
         deleteImages(post);
+        post.update(request, saveImages(images), response);
         postRepository.save(post);
         return request.getTitle();
     }
