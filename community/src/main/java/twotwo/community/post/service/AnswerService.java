@@ -60,7 +60,7 @@ public class AnswerService {
             throw new BudException(CHANGE_IMPOSSIBLE_PINNED_ANSWER);
 
         answer.update(request, saveImages(images), response);
-
+        answerRepository.save(answer);
         deleteImages(answer);
         return answerId;
     }
