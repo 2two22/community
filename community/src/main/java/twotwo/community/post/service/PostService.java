@@ -126,7 +126,7 @@ public class PostService {
         if(!Objects.equals(userId, tokenUserId))
             throw new BudException(NOT_POST_OWNER);
         PageRequest request = PageRequest.of(page, size);
-        return postRepository.findAllByUser_IdAndTypeOrderByCreatedAtDesc(type, request)
+        return postRepository.findAllByUser_IdAndTypeOrderByCreatedAtDesc(userId, type, request)
                 .map(post -> PostResponse.from(post, userId));
     }
 }
