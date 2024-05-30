@@ -121,6 +121,7 @@ public class PostService {
     }
 
     public Page<PostResponse> retrieveMyPosts(String token, Long userId, int page, int size, PostType type){
+        log.error("retrieveMyPosts");
         Long tokenUserId = tokenProvider.getId(token);
         if(!Objects.equals(userId, tokenUserId))
             throw new BudException(NOT_POST_OWNER);
