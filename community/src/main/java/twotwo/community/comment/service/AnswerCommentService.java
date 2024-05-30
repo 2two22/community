@@ -48,7 +48,7 @@ public class AnswerCommentService {
         answer.increaseCommentCount();
         answerRepository.save(answer);
 
-        return CommentResponse.from(commentRepository.save(AnswerComment.of(parent.getAnswerId(), commentId, content, user)), user.id());
+        return CommentResponse.ofRecomment(commentRepository.save(AnswerComment.of(parent.getAnswerId(), commentId, content, user)), user.id());
     }
 
     public CommentResponse update(String commentId, String token, String content) {
