@@ -16,6 +16,6 @@ public interface PostRepository extends MongoRepository<Post, String> {
     //Optional<Post> findById(String id);
     Page<Post> findAllByTypeInOrderByCreatedAtDesc(List<PostType> types, PageRequest request);
     Page<Post> findAllByUser_IdAndTypeOrderByCreatedAtDesc(Long userId, PostType type, PageRequest request);
-    boolean findByIdAndType(String id, PostType type);
+    boolean existsByIdAndType(String id, PostType type);
     List<Post> findByUser_Id(Long userId);
 }
