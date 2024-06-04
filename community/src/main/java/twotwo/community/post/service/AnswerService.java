@@ -44,6 +44,8 @@ public class AnswerService {
         }
         // TODO : request to user server
         UserResponse response = userClient.getUserInfo(token);
+        post.increaseCommentCount();
+        postRepository.save(post);
         return answerRepository.save(Answer.of(request, saveImages(images), response)).getContent();
     }
 
@@ -116,6 +118,10 @@ public class AnswerService {
         answerPinRepository.findByAnswerId(answerId)
                 .ifPresent(answerPinRepository::delete);
         answerRepository.delete(answer);
+        Post post = postRepository.findById(answer.getPostId())
+                .orElseThrow(() -> new BudException(NOT_POST_OWNER));
+        post.decreaseCommentCount();
+        postRepository.save(post);
         return answerId;
     }
 
