@@ -42,7 +42,7 @@ public class AnswerService {
         if (Objects.equals(post.getUser().getId(), userId)) {
             throw new BudException(CANNOT_ANSWER_YOURSELF);
         }
-        // TODO : request to user server
+        // user server 에 글쓴이 정보 request
         UserResponse response = userClient.getUserInfo(token);
         post.increaseCommentCount();
         postRepository.save(post);

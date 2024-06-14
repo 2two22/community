@@ -55,12 +55,4 @@ public class AnswerController {
     public ResponseEntity<List<AnswerResponse>> retrieve(@RequestHeader(value = HttpHeaders.AUTHORIZATION) String token, @PathVariable String postId) {
         return ResponseEntity.ok(answerService.retrieve(postId, token));
     }
-//
-//    @GetMapping
-//    public ResponseEntity<List<PostResponse>> retrieve(@RequestParam(required = false, defaultValue = "0") int page,
-//                                                       @RequestParam(required = false, defaultValue = "10") int size,
-//                                                       @RequestParam(required = false) PostType postType,
-//                                                       Long userId) {
-//        return ResponseEntity.ok(postService.retrievePosts(userId, page, size, postType));
-//    }
 }

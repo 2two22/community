@@ -42,8 +42,7 @@ public class PostService {
     private final TokenProvider tokenProvider;
 
     public String create(String token, List<MultipartFile> images, PostRequest request) {
-
-        // TODO : request to user server
+        // user 서버에 user profile request
         UserResponse response = userClient.getUserInfo(token);
         return postRepository.save(Post.of(request, saveImages(images), response)).getTitle();
     }
