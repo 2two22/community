@@ -46,6 +46,9 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
       - name: Use gcloud CLI
         run: |
           gcloud compute ssh --project=${{ secrets.GCP_PROJECT }} --zone=${{ secrets.GCP_ZONE }} ${{ secrets.GCP_INSTANCE_NAME }} -- \
